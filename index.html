@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Budget Notification Form</title>
+        <link rel="script" href="scripts/main.js">
+    </head>
+  <body>
+    <main>
+        <form id="form" onsubmit="send_email(); return false;" action="#">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name"><br>
+
+            <label for="category">Select a Category</label>
+            <select name="category" id="category">
+                <option value="groceries">Groceries</option>
+                <option value="gas">Gas</option>
+                <option value="apartment">Apartment</option>
+                <option value="luxury">Luxury</option>
+                <option value="medical">Medical</option>
+            </select><br>
+
+            <label for="desc">Description</label>
+            <input type="text" name="desc" placeholder="i.e. Costco" id="desc"><br>
+            
+            <label for="price">Price</label>
+            <input type="text" name="price" placeholder="$0.00" id="price"><br>
+
+            <input type="submit"></button>
+        </form>
+    </main>
+    </body>
+    <script src="scripts/main.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init({
+                publicKey: "DTQmBt0Djd_7e7PY4",
+            });
+        })();
+    </script>
+</html>
