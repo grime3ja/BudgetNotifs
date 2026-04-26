@@ -1,4 +1,6 @@
 .env
 *.xlsx
 .venv
-*.json
+creds.json
+.vercel
+.env*.local
