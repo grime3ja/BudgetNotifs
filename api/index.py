@@ -28,8 +28,10 @@ class handler(BaseHTTPRequestHandler):
 
         m_d_y = date.strftime("%m/%d/%Y")
         description = data['description']
-        amount = float(data['price'])
-        total = float(sheet.acell(f'D{row-1}').value) - amount
+        amount = -float(data['price'])
+        if data['category'].lower() == 'income':
+            amount = -amount
+        total = float(sheet.acell(f'D{row-1}').value) + amount
 
         sheet.update(f"A{row}", [[m_d_y, description, amount, total]])
 
