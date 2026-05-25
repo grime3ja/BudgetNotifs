@@ -9,4 +9,19 @@ function send_email() {
             alert ("An error occured", error)
         },
     );
+
+    formData = {
+        "name": document.getElementById("name").value,
+        "category": document.getElementById("category").value,
+        "description": document.getElementById("desc").value,
+        "price": document.getElementById("price").value
+    };
+
+    fetch("/api/index", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
 }

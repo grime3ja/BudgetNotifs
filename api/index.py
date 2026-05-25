@@ -1,28 +1,37 @@
-def handler(request):
-    import gspread, os
-    from dotenv import load_dotenv, set_key
-    from datetime import datetime
-    
-    load_dotenv(override=True)
+import gspread, os, json
+from datetime import datetime
+from http.server import BaseHTTPRequestHandler
+from zoneinfo import ZoneInfo
 
-    google = gspread.service_account(filename="creds.json")
-    row = int(os.getenv("EXCEL_ROW"))
+class handler(BaseHTTPRequestHandler):
+    def respond(self):
+        response = json.dumps({"status": "ok"})
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', str(len(response)))
+        self.end_headers()
+        self.wfile.write(response.encode())
 
-    spreadsheet = google.open("Budget")
+    def do_POST(self):
+        creds_dict = json.loads(os.environ.get("CREDS_JSON"))
+        google = gspread.auth.service_account_from_dict(creds_dict)
+        row = int(os.environ.get("EXCEL_ROW"))
 
-    date = datetime.now()
-    sheet = spreadsheet.worksheet(f'{date.month}-{date.year}')
+        spreadsheet = google.open("Budget")
 
-    m_d_y = date.strftime("%m/%d/%Y")
-    description = "test"
-    amount = 10
-    total = float(sheet.acell(f'D{row-1}').value) + amount
+        date = datetime.now(ZoneInfo("America/New_York"))
+        sheet = spreadsheet.worksheet(f'{date.month}-{date.year}')
 
-    sheet.update(f"A{row}", [[m_d_y, description, amount, total]])
+        content_length = int(self.headers.get('Content-Length'), 0)
+        body = self.rfile.read(content_length)
+        data = json.loads(body)
 
-    set_key(".env", "EXCEL_ROW", str(row + 1))
+        m_d_y = date.strftime("%m/%d/%Y")
+        description = data['description']
+        amount = float(data['price'])
+        total = float(sheet.acell(f'D{row-1}').value) - amount
 
-    return {
-        "statusCode": 200,
-        "body": "Success"
-    }
+        sheet.update(f"A{row}", [[m_d_y, description, amount, total]])
+
+        os.environ.update({"EXCEL_ROW": str(row + 1)})
+        self.respond()
